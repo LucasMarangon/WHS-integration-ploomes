@@ -833,7 +833,6 @@ async function save_whs(){
             const jsonResponse = await response.json();
             console.log(response);
             console.log(jsonResponse);
-            alert('Link do orçamento: ', jsonResponse.data.object.url)
             console.log(jsonResponse.data.object.url);
         } else {
             const errorText = await response.text();
