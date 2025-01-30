@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <title>Document</title>
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&display=swap');
+    body, html{
+    display: flex;
+    width: 100%;
+    min-height: 30vh;  
+    background-color: white;
+    flex-direction: column;  
+    overflow-x: hidden;  
+}
+:root {
+    --out-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    --out-shadow-focus: rgba(0, 0, 0, 0.36) 0px 1px 4px;
+    --text-color: #1f2121;
+    --dream-black: #1f2121;
+    --dream-wine: #351c243f;
+    --dream-green: #107e57;
+    --dream-blue: #254eb5;
+    --dream-smoke: #ebe9e9;
+    --dream-white: #f2f2f2;
+    --dream-sky: #fff;
+    --dream-orange: #ef540c;
+    --dream-fade-orange: #e9936a;
+    --dream-fume: #cdcfcf;
+    --dream-fade: #e4e3e3;
+}
+* {
+    margin: 0px;
+    padding: 0px;
+    font-family: "Exo 2", sans-serif;
+}
+.app-container {
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    width: 100%;
+    min-height: 450px;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.atelier-input, .atelier-selector {
+    background-color: white;
+    padding: 8px;
+    margin: 5px;
+    border-radius: 4px;
+    border: none;
+    box-shadow: var(--out-shadow);
+    transition: 0.2s;
+    outline: none;
+    font-weight:500;
+    flex: 1;
+    
+}
+.atelier-input-table{
+    background-color: white;
+    padding: 8px;
+    margin: 5px;
+    border-radius: 4px;
+    border: none;
+    box-shadow: var(--out-shadow);
+    transition: 0.2s;
+    outline: none;
+    font-weight:500;
+    flex: 1;
+    height: 20px;
+    width: 30px;
+}
+
+input:focus, select:focus {
+    outline: 1px solid red;
+}
+.atelier-input:hover, .atelier-input-table:hover, .atelier-selector:hover {
+    cursor: pointer;
+}
+.atelier-input:focus, .atelier-input-table:focus, .atelier-selector:focus {
+    box-shadow: var(--out-shadow-focus);
+}
+.atelier-btn {
+        background-color: #ef540c;
+        padding: 8px;
+        border: none;
+        border-radius: 4px;
+        font-weight: 600;
+        color: white;
+        text-align: center;
+        width: 100px;
+        transition: 0.2s;
+        box-shadow: var(--out-shadow);
+
+    }
+.atelier-btn:hover, .button-table:hover {
+    background-color: #e74c3c;
+    color: white;
+    cursor: pointer;
+}
+.row{
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+.table-container {
+    width: 100%;
+    margin-top: 20px;
+    display: none;
+    font-size: 15px;
+}
+.button-container{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    position: absolute;
+    right: 0;
+    padding-right: 15px;
+}
+.button-table{
+    background-color: #ef540c;
+        padding: 4px;
+        border: none;
+        border-radius: 4px;
+        font-weight: 600;
+        color: white;
+        text-align: center;
+        width: 35px;
+        height: 35px;
+        transition: 0.2s;
+}
+.table-container tr{
+    height: 11px;
+}
+.atelier-table {
+    background-color: #f0f0f0; 
+    border-radius: 10px; 
+    overflow: hidden; 
+    height: 40px;
+    width: 100vw;
+    
+
+}
+
+.atelier-table td, .atelier-table th {
+    position: relative;
+    display: flex;
+    padding: 10px;
+}
+.atelier-header {
+    background-color: var(--dream-green);
+    color: white;
+    font-weight: bold;
+}
+
+/* styling for the dropdown */
+.custom-select {
+    background-color: white;
+    padding: 8px;
+    margin: 5px;
+    border-radius: 4px;
+    border: none;
+    box-shadow: var(--out-shadow);
+    transition: 0.2s;
+    outline: none;
+    font-weight:500;
+    flex: 1;
+    position: relative;
+    width: 200px
+}
+
+.select-header {
+    cursor: pointer;
+}
+
+.select-options {
+    margin-top: 15px;
+    border-radius: 4px;
+    display: none;
+    position: absolute;
+    width: 200px;
+    background: white;
+    border: none;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.select-options.show {
+  display: block;
+}
+
+.parent-category {
+  padding: 8px 15px;
+  font-weight: bold;
+  background: #e9e9e9;
+  color: #666;
+  cursor: default;
+}
+
+.child-option {
+  padding: 8px 25px;
+  cursor: pointer;
+}
+
+.child-option:hover {
+  background: #f0f0f0;
+}
+
+.selected {
+  background: #e3f2fd;
+}
+</style>
+
+<body>
+    <div class="app-container">
+        <div class="row">
+            <div style="display: flex; flex-direction: column">
+                <label style="margin-left: 5px;">Tipo de inversor</label>
+                <select class="atelier-selector" id="inverter-type" style="width: 200px; margin-top: 20px;" onchange="update_modules(this)">
+                    <option value="String">String</option>
+                    <option value="Microinversor">Microinversor</option>
+                </select>
+            </div>
+
+            <div style="display: flex; flex-direction: column">
+                <label style="margin-left: 5px;">Tensão</label>
+                <select class="atelier-selector" id="voltage" style="width: 200px; margin-top: 20px;">
+                    <option value="220">220v</option>
+                    <option value="380">380v</option>
+                    <option value="800">800v</option>
+                </select>
+            </div>
+
+            <div style="display: flex; flex-direction: column">
+                <label style="margin-left: 5px;">Estrutura</label>
+                <select class="atelier-selector" id="structures" style="width: 200px; margin-top: 20px;">
+                    <option value="none">Escolha a Estrutura</option>
+                </select>
+            </div>
+
+            <div style="display: flex; flex-direction: column">
+                <label style="margin-left: 5px;">CEP</label>
+                <input class="atelier-input" style="width: 200px; margin-top: 20px;" id="cep" type="text">
+            </div>
+            
+            <div style="display: flex; flex-direction: column">
+                <label style="margin-left: 5px;">Módulo</label>
+                <select class="atelier-selector" id="modules" style="width: 200px; margin-top: 20px;">
+                    <option value="none">Escolha o Módulo</option>
+                </select>
+            </div>
+        </div>
+        <div class="row" style="display: flex; justify-content: center; align-items: center;">
+            <div style="display: flex; flex-direction: column; justify-content: center;">
+                <button class="atelier-btn" onclick="send_form()" style="width: 200px; margin-top: 20px;">Gerar Kit</button>
+            </div>
+        </div>
+        <div style="display: none;" id="loading-icon-kit">
+            <div class="fa fa-spinner fa-spin"></div>
+        </div>
+        <div id="products">
+        </div>
+        <div class="row" style="display: flex; justify-content: center; align-items: center;">
+            <div style="display: none; " id="loading-icon-value">
+                <div class="fa fa-spinner fa-spin"></div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; justify-content: center;">
+                <label style="margin-top: 5px;">Valor do Kit</label>
+                <input class="atelier-input" style="font-size: 20px ;width: 400px; margin-top: 20px;" id="total-kit" type="text" readonly="true" value="R$ 0,00">
+            </div>
+            <div style="display: flex; flex-direction: column; justify-content: center;">
+                <label style="margin-top: 5px;">Adicionar Produto</label>
+                <button class="button-table" id="add-item" style="margin-left: 5px; height:42px; margin-top: 15px; width: 150px;" onclick="get_product_route()" >
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </button>
+            </div>
+
+        </div>
+        <div style="display: none" id="loading-icon-extra">
+            <div class="fa fa-spinner fa-spin"></div>
+        </div>
+        <div class="row" style="display: flex; justify-content: center; align-items: center;">
+            <div style="display: none; flex-direction: column;" id="category-div">
+                <label style="margin-left: 5px;">Categoria</label>
+                <div class="custom-select" style="margin-top: 20px;">
+                    <div class="select-header">Selecione a Categoria</div>
+                    <div class="select-options">
+                    </div>
+                  </div>
+            </div>
+            <div style="display: none; flex-direction: column;" id="extra-product-div">
+                <label style="margin-left: 5px;">Produtos</label>
+                <select class="atelier-selector" id="extra-products" style="width: 200px; margin-top: 20px;">
+                    <option value="none">Escolha o Produto</option>
+                </select>
+            </div>
+            <div style="display: none; flex-direction: column; justify-content: center; margin-top: 20px;" id="quantity-input">
+                <div style="height: 16px;"></div>
+                <input class="atelier-input-table" type="number" id="extra-product-qtd" value="1">
+            </div>
+        
+            <div style="display: none; flex-direction: column; justify-content: center; margin-top: 20px;" id="add-button">
+                <div style="height: 16px;"></div>
+                <button class="button-table" id="add-item" style="height:35px; width: 80px;" onclick="add_and_hide()">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+        </div>
+        <div class="row" style="display: flex; justify-content: center; align-items: center;">
+            <button class="atelier-btn" onclick="save_whs()" style="width: 300px;">Salvar orçamento na WHS</button>
+        </div>
+        <div style="display: none" id="loading-icon-save">
+            <div class="fa fa-spinner fa-spin"></div>
+        </div>
+
+    </div>
+    
+</body>
+
+<script>
+    const $name = (name) => PloomesDocument.querySelector(`input[name="${name}"]`);
+    const $div = (id) => document.querySelector(`#${id}`); 
+    let apiKey = null;
+    let objResponse=null;
+
+
+    window.onload= function(){
+        set_apiKey();
+   
+    }
+
+    function set_apiKey(){
+        apiKey = 'Bearer ' + ($name('quote_0DFABB74-E2A9-4EEC-9E82-3187227CC633').value);
+        get_route();
+    };
+
+
+
+    async function get_route(){
+        const whsRoute = 'https://services.whs.app.br/ploomes-integration/ploomes-get/index.php';
+        
+        const response = await fetch(whsRoute, {
+            headers:{
+                ...this.headers,
+                'apikey': apiKey
+            },       
+         });
+
+        if (response.ok){
+            const responseBody = await response.json();
+
+            fill_modules(responseBody.object);
+            fill_structures(responseBody.object);
+
+        } else {
+            http_error(response.status, await response.text(), true); 
+            request_error(response.status);
+        } 
+    }
+
+    function update_modules(el) {
+    const modules = $div('modules'); 
+    modules.innerHTML = '<option value="none">Escolha o Módulo</option>';
+
+
+    if (el.value == "Microinversor") {
+        objResponse.modules.forEach(module => {
+            if (objResponse.modules_micro_compatibles.includes(module.id)) {
+                const option = document.createElement('option');
+                option.textContent = module.value; 
+                option.value = module.id; 
+                modules.appendChild(option); 
+                }
+            });
+        } else {
+        objResponse.modules.forEach(module => {
+                const option = document.createElement('option');
+                option.textContent = module.value; 
+                option.value = module.id; 
+                modules.appendChild(option); 
+                })
+        }
+    } ;
+
+    function request_error(status){
+        const messages = {
+        400: 'Requisição inválida - verifique os dados enviados',
+        401: 'Autenticação necessária',
+        403: 'Permissão negada',
+        404: 'Recurso não encontrado',
+        500: 'Erro interno do servidor'
+    };
+
+    alert(messages[status] || 
+        (status >= 400 && status <= 499
+        ? 'Erro na geração de kit: Verifique os parâmetros'
+        : 'Erro no servidor: Tente novamente mais tarde'));
+    }; 
+
+    function format_currency(value) {
+     return new Intl.NumberFormat('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(value);
+}
+
+
+    function fill_modules(body){
+        objResponse = body;
+        body.modules.forEach(i => {
+            const option = document.createElement('option');
+            option.textContent = i.value;
+            option.value = i.id;
+            modules.appendChild(option);
+            
+        });
+    };
+
+    function fill_structures(body){
+        body.list_structures.forEach(i => {
+            const option = document.createElement('option');
+            option.textContent = i.value;
+            option.value = i.id;
+            structures.appendChild(option);
+        });
+    };
+
+
+
+
+    let body = [];
+    function create_body(){
+        const phase = cleanString($name('quote_389821C5-6735-4993-BE3D-F4168D0377BB').value); //Padrão de entrada
+        const powerpeak = $name('quote_6AB963A0-630B-4593-BEF8-46C3BB6B8691').value; // potência do sistema kWp
+        const inverter = $div('inverter-type').value; //tipo de inversor
+        const voltage = $div('voltage').value; //tensão
+        const cep = $div('cep').value; // CEP
+        const modules = $div('modules'); // módulos
+        const structures = $div('structures'); // Estruturas/tipo de telha
+
+
+        function cleanString(str) {
+        return str
+        .normalize('NFD') // decomposes the accented letters to base + diacritics
+        .replace(/[\u0300-\u036f]/g, '') // removes the diacritics leaving only the base letter (á -> a) 
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, '');
+}
+
+        fields = {       
+            powerpeak: powerpeak,
+            voltage: voltage,
+            phase: phase,
+            structure: structures.value,
+            shipping: 1,
+            module: modules.value,
+            label: 'Kit Gerado via CRM Sunhub',
+            cep: cep,
+            inverter: inverter,
+            microinverter: false,
+        };
+
+        body = fields;
+    };
+
+
+    async function send_form(){
+    create_body();
+    const formData = new FormData();
+    Object.entries(body).forEach(([key, value]) => {
+        formData.append(key, value);
+    });    
+    $div('loading-icon-kit').style.display = 'flex';
+
+
+    try {
+        const response = await fetch("https://services.whs.app.br/ploomes-integration/ploomes-post/index.php", {
+            method: "POST",
+            headers:{
+                'apikey' : apiKey,
+            },
+            body: formData,
+        });
+        
+        if (response.ok) {
+            const jsonResponse = await response.json();
+            console.log(response);
+            compose_kit(jsonResponse.data.object);
+        } else {
+            const errorText = await response.text();
+            console.error(response.status);
+            request_error(response.status);
+        }
+    } catch (e) {
+        console.error("Request failed:", e);
+    } finally {
+        $div('loading-icon-kit').style.display = 'none';
+    }
+}
+
+let n = 0;
+let calculatorData = null;
+function compose_kit(obj){
+    $div('products').innerHTML='';
+    n = 0;
+    obj.items.forEach(i => {
+        n++
+        const productDiv = document.createElement('div');
+        productDiv.id = `product-${n}`
+        productDiv.innerHTML = `
+            <div class="row" id="row${n}" style="display: flex; justify-content: center; align-items: center;">
+            <table class="atelier-table">
+                <tr>
+                    <td>
+                        <div style="padding-right: 20px;">
+                            ${n}
+                        </div>
+                        <div>
+                            <label for="module${n}" style="font-size: 14px;">${i.type}</label>
+                            <p id="module${n}" style="font-weight: bold;">${i.title}</p>
+                        </div>
+                        <input type="text" style="display: none;" id="product-id" value="${i.id}">                 
+                        <div class="button-container">
+                            <input class="atelier-input-table" type="number" id="product-qtd" value="${i.qtd}" onchange="update_kit()">
+                            <button class="button-table" id="remove-${n}" style="margin-left: 5px;" onclick="remove_product(this)" >
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </td>    
+                </tr>
+            </table>
+        </div>
+        `
+        $div('products').appendChild(productDiv);
+        
+    });
+
+
+    const finalVal = format_currency(obj.total.total);
+    const ploomesVal = $name('quote_465A2320-9F5B-44C9-A793-1A5879946474');
+    ploomesVal.value = finalVal;
+    ploomesVal.dispatchEvent(new Event('change')); 
+    $div('total-kit').value = `R$ ${finalVal}`;
+    calculatorData = obj.calculator_data;
+
+};
+
+function remove_product(el){
+    el.closest('.row').remove();
+    update_kit();
+};
+
+let updateBody = [];
+
+function create_update_body(){
+    updateBody = []; // resets the var so it doesnt break the code
+    const productRows = $div('products').querySelectorAll('.row');
+
+
+    productRows.forEach(row =>{
+        const productId = row.querySelector(`input[id="product-id"]`).value;
+        const productQtd = row.querySelector(`input[id="product-qtd"]`).value;
+
+        const product = {
+            id: productId,
+            qtd : productQtd
+        };
+
+        updateBody.push(product);
+    });
+
+    
+};
+
+async function update_kit(){
+    create_update_body();
+
+    const formData = new FormData();
+    const requestBody = {
+        "calculator_data": calculatorData,
+        "items": updateBody
+    };
+
+    $div('loading-icon-value').style = 'margin-top: 36px;';
+
+
+    try {
+        const response = await fetch("https://services.whs.app.br/ploomes-integration/ploomes-put/index.php", {
+            method: "POST",
+            headers:{
+                'apikey' : apiKey,
+            },
+            body: formData
+        });
+
+        if (response.ok) { 
+            const jsonResponse = await response.json();
+            console.log(response);
+
+            const finalVal = format_currency(jsonResponse.data.object.value_final);
+            const ploomesVal = $name('quote_465A2320-9F5B-44C9-A793-1A5879946474');
+            ploomesVal.value = finalVal;
+            ploomesVal.dispatchEvent(new Event('change')); 
+
+            $div('total-kit').value = `R$ ${finalVal}`;
+
+        } else {
+            const errorText = await response.text();
+            console.error(response.status);
+            request_error(response.status);
+        }
+    } catch (e) {
+        console.error("Request failed:", e);
+    } finally {
+        $div('loading-icon-value').style.display = 'none';
+    }
+};
+
+async function get_product_route(){
+    const whsRoute = 'https://services.whs.app.br/ploomes-integration/ploomes-get/index-products.php';
+        
+        const response = await fetch(whsRoute, {
+            headers:{
+                ...this.headers,
+                'apikey': apiKey
+            },        
+        });
+        
+        $div('loading-icon-extra').style.display = 'flex';
+
+        if (response.ok){
+            const responseBody = await response.json();
+            console.log(responseBody);
+            show_extra_products(responseBody.object);
+
+        } else {
+            http_error(response.status, await response.text(), true); 
+            console.log('Oh no :()');
+            request_error(response.status);
+        } 
+
+        $div('loading-icon-extra').style.display = 'none';
+
+};
+
+
+let products = null;
+let categories = [];
+function show_extra_products(obj){
+    
+    $div('category-div').style.display = 'flex';
+    $div('category-div').style.flexDirection = 'column'; 
+
+    $div('extra-product-div').style.display = 'flex';
+    $div('extra-product-div').style.flexDirection = 'column'; 
+
+    $div('add-button').style.display = 'flex';
+    $div('add-button').style.flexDirection = 'column'; 
+
+    $div('quantity-input').style.display = 'flex';
+    $div('quantity-input').style.flexDirection = 'column'; 
+
+    if( obj.length > 0){
+
+        products = obj
+        let cat = []
+        let categorySection = {}
+
+        obj.forEach( e => {
+            let c = e.category?.title
+            let sec = e.category?.section
+
+            if( c && !cat.includes( c ) ){
+                cat.push( c )
+
+                if(Object.keys(categorySection).includes(sec)){
+                    categorySection[sec].push({ id:c, value:c })
+                }else{
+                    categorySection[sec] = [{ id:c, value:c }]
+                }
+            }
+        });
+
+        cat.sort()
+
+        let category = [categorySection]
+        cat.forEach( c => {
+            category.push( { id:c, value:c } )
+        })
+
+        
+        console.log('sections',categorySection);
+        console.log('cat',category);
+        categories = categorySection;
+
+        createSelect();
+
+}
+
+};
+
+function add_and_hide(){
+
+    const productId = $div('extra-products').value;
+    const quantity = $div('extra-product-qtd').value;
+    const text = document.querySelector('#extra-products option:checked').text;
+
+    n++
+    const productDiv = document.createElement('div');
+    productDiv.id = `product-${n}`
+    productDiv.innerHTML = `
+        <div class="row" id="row${n}" style="display: flex; justify-content: center; align-items: center;">
+            <table class="atelier-table">
+                <tr>
+                    <td>
+                        <div style="padding-right: 20px;">
+                            ${n}
+                        </div>
+                        <div>
+                            <div style="height: 16px;"></div>
+                            <p id="module${n}" style="font-weight: bold;">${text}</p>
+                        </div>
+                        <input type="text" style="display: none;" id="product-id" value="${productId}">                 
+                        <div class="button-container">
+                            <input class="atelier-input-table" type="number" id="product-qtd" value="${quantity}" onchange="update_kit()">
+                            <button class="button-table" id="remove-${n}" style="margin-left: 5px;" onclick="remove_product(this)" >
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </td>    
+                </tr>
+            </table>
+        </div>
+        `
+        $div('products').appendChild(productDiv);
+
+        update_kit();
+
+};
+
+
+function createSelect() {
+  const optionsContainer = document.querySelector('.select-options');
+  optionsContainer.innerHTML = '';
+
+  // parent-child structure
+  for (const [parent, children] of Object.entries(categories)) {
+    // Adding parents
+    const parentDiv = document.createElement('div');
+    parentDiv.className = 'parent-category';
+    parentDiv.textContent = parent;
+    optionsContainer.appendChild(parentDiv);
+
+    // Adding children
+    children.forEach(child => {
+      const childDiv = document.createElement('div');
+      childDiv.className = 'child-option';
+      childDiv.textContent = child.value;
+      childDiv.dataset.value = child.id;
+      
+      childDiv.addEventListener('click', function() {
+        document.querySelectorAll('.child-option').forEach(opt => 
+          opt.classList.remove('selected'));
+        this.classList.add('selected');
+        document.querySelector('.select-header').textContent = this.textContent;
+        optionsContainer.classList.remove('show');
+        populate_products(this.dataset.value)
+      });
+
+      optionsContainer.appendChild(childDiv);
+
+      // I wish i could just use a select...
+    });
+  }
+}
+
+//opens the dropdown (select)
+document.querySelector('.select-header').addEventListener('click', function() {
+  document.querySelector('.select-options').classList.toggle('show');
+  populate_products(child.id);
+});
+
+//handles the closing of the dropdown
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.custom-select')) {
+    document.querySelector('.select-options').classList.remove('show');
+  }
+});
+
+function populate_products(selectedCategory){
+    const productSelect = $div('extra-products');
+    productSelect.innerHTML = '<option value="">Selecione um Produto</option>';
+
+    const productsPerCategory = products.filter(p =>
+        p.category?.title == selectedCategory
+    );
+
+    productsPerCategory.forEach(p => {
+        const option = document.createElement('option');
+        option.value = p.id;
+        option.textContent = p.title;
+        productSelect.appendChild(option);
+    })
+
+
+
+};
+
+async function save_whs(){
+    const formData = new FormData();
+    formData.append('calculator_data', calculatorData);  
+    $div('loading-icon-save').style.display = 'flex';
+
+
+    try {
+        const response = await fetch("https://services.whs.app.br/ploomes-integration/ploomes-post/index-save.php", {
+            method: "POST",
+            headers:{
+                'apikey' : apiKey,
+            },
+            body: formData,
+        });
+        
+        if (response.ok) {
+            const jsonResponse = await response.json();
+            console.log(response);
+            console.log(jsonResponse);
+            alert('Link do orçamento: ', jsonResponse.data.object.url)
+            console.log(jsonResponse.data.object.url);
+        } else {
+            const errorText = await response.text();
+            console.error(response.status);
+            request_error(response.status);
+        }
+    } catch (e) {
+        console.error("Request failed:", e);
+    } finally {
+        $div('loading-icon-save').style.display = 'none';
+    }
+};
+
+
+//TO DO= se trifásico & tensão = 220v -> setar como monofásico
+// se monofásico & setar tensão =380v -> setar como trifásico
+// tentar enviar o update de valor com um evento manual
+
+
+</script>
