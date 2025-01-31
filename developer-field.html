@@ -329,19 +329,31 @@ input:focus, select:focus {
     const $name = (name) => PloomesDocument.querySelector(`input[name="${name}"]`);
     const $div = (id) => document.querySelector(`#${id}`); 
     let apiKey = null;
+    let phase = null;
+    let powerpeak = null;
+    let ploomesVal = null;
     let objResponse=null;
 
+    window.addEventListener("DOMContentLoaded", () => {
+        set_ploomes_vars();
+        get_route();
+    });
 
-    window.onload= function(){
-        set_apiKey();
-   
+    function cleanString(str) {
+        return str
+        .normalize('NFD') // decomposes the accented letters to base + diacritics
+        .replace(/[\u0300-\u036f]/g, '') // removes the diacritics leaving only the base letter (á -> a) 
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, '');
     }
 
-    function set_apiKey(){
-        apiKey = 'Bearer ' + ($name('quote_0DFABB74-E2A9-4EEC-9E82-3187227CC633').value);
-        get_route();
-    };
+    function set_ploomes_vars(){
+        apiKey = 'Bearer ' + ($name('quote_0DFABB74-E2A9-4EEC-9E82-3187227CC633').value); // Chave WHS
+        phase = cleanString($name('quote_389821C5-6735-4993-BE3D-F4168D0377BB').value); //Padrão de entrada
+        powerpeak = $name('quote_6AB963A0-630B-4593-BEF8-46C3BB6B8691').value; // potência do sistema kWp
+        ploomesVal = $name('quote_465A2320-9F5B-44C9-A793-1A5879946474');
 
+    };
 
 
     async function get_route(){
@@ -438,22 +450,12 @@ input:focus, select:focus {
 
     let body = [];
     function create_body(){
-        const phase = cleanString($name('quote_389821C5-6735-4993-BE3D-F4168D0377BB').value); //Padrão de entrada
-        const powerpeak = $name('quote_6AB963A0-630B-4593-BEF8-46C3BB6B8691').value; // potência do sistema kWp
+        set_ploomes_vars();
         const inverter = $div('inverter-type').value; //tipo de inversor
         const voltage = $div('voltage').value; //tensão
         const cep = $div('cep').value; // CEP
         const modules = $div('modules'); // módulos
         const structures = $div('structures'); // Estruturas/tipo de telha
-
-
-        function cleanString(str) {
-        return str
-        .normalize('NFD') // decomposes the accented letters to base + diacritics
-        .replace(/[\u0300-\u036f]/g, '') // removes the diacritics leaving only the base letter (á -> a) 
-        .toLowerCase()
-        .replace(/[^a-z0-9\s]/g, '');
-}
 
         fields = {       
             powerpeak: powerpeak,
@@ -545,11 +547,11 @@ function compose_kit(obj){
 
 
     const finalVal = format_currency(obj.total.total);
-    const ploomesVal = $name('quote_465A2320-9F5B-44C9-A793-1A5879946474');
     ploomesVal.value = finalVal;
     ploomesVal.dispatchEvent(new Event('change')); 
     $div('total-kit').value = `R$ ${finalVal}`;
     calculatorData = obj.calculator_data;
+    console.log(calculatorData);
 
 };
 
@@ -589,6 +591,8 @@ async function update_kit(){
         "items": updateBody
     };
 
+    formData.append('data', JSON.stringify(requestBody));
+
     $div('loading-icon-value').style = 'margin-top: 36px;';
 
 
@@ -604,9 +608,9 @@ async function update_kit(){
         if (response.ok) { 
             const jsonResponse = await response.json();
             console.log(response);
+            alert('Orçamento gerado com sucesso na WHS!');
 
             const finalVal = format_currency(jsonResponse.data.object.value_final);
-            const ploomesVal = $name('quote_465A2320-9F5B-44C9-A793-1A5879946474');
             ploomesVal.value = finalVal;
             ploomesVal.dispatchEvent(new Event('change')); 
 
